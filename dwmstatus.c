@@ -144,7 +144,7 @@ getbattery(char *base)
 	if (remcap < 0 || descap < 0)
 		return smprintf("invalid");
 
-	return smprintf("%.0f%%%c", ((float)remcap / (float)descap) * 100);
+	return smprintf("%.0f", ((float)remcap / (float)descap) * 100);
 }
 
 int
