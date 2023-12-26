@@ -105,54 +105,11 @@ readfile(char *base, char *file)
 	return smprintf("%s", line);
 }
 
-char *
-getbattery(char *base)
-{
-	char *co;
-	int descap, remcap;
-
-	descap = -1;
-	remcap = -1;
-
-	co = readfile(base, "present");
-	if (co == NULL)
-		return smprintf("");
-	if (co[0] != '1') {
-		free(co);
-		return smprintf("not present");
-	}
-	free(co);
-
-	co = readfile(base, "charge_full_design");
-	if (co == NULL) {
-		co = readfile(base, "energy_full_design");
-		if (co == NULL)
-			return smprintf("");
-	}
-	sscanf(co, "%d", &descap);
-	free(co);
-
-	co = readfile(base, "charge_now");
-	if (co == NULL) {
-		co = readfile(base, "energy_now");
-		if (co == NULL)
-			return smprintf("");
-	}
-	sscanf(co, "%d", &remcap);
-	free(co);
-
-	if (remcap < 0 || descap < 0)
-		return smprintf("invalid");
-
-	return smprintf("%.0f%%", ((float)remcap / (float)descap) * 100);
-}
-
 int
 main(void)
 {
 	char *status;
 	char *avgs;
-	char *bat;
 	char *time;
 
 	if (!(dpy = XOpenDisplay(NULL))) {
@@ -162,14 +119,12 @@ main(void)
 
 	for (;;sleep(60)) {
 		avgs = loadavg();
-		bat = getbattery("/sys/class/power_supply/BAT0");
-		time = mktimes("%F %I:%M %p",tzcolombo);
+		time = mktimes("%F | %I:%M %p",tzcolombo);
 
-		status = smprintf("%s | %s | %s",avgs, bat, time);
+		status = smprintf("%s | %s",avgs, time);
 		setstatus(status);
 
 		free(avgs);
-		free(bat);
 		free(time);
 		free(status);
 	}
@@ -178,4 +133,3 @@ main(void)
 
 	return 0;
 }
-
