@@ -119,7 +119,7 @@ main(void)
 
 	for (;;sleep(60)) {
 		avgs = loadavg();
-		time = mktimes("%F | %I:%M %p",tzcolombo);
+		time = mktimes("%A %d %b %Y | %I:%M %p",tzcolombo);
 
 		status = smprintf("%s | %s",avgs, time);
 		setstatus(status);
